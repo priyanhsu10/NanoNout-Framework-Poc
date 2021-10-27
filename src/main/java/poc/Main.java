@@ -8,7 +8,21 @@ interface  IStartup{
     void configureServices();
     void  configurePipeline(AppPipeLineBuilder builder);
 }
+interface IServiceCollection{
+    <TSource>  void register(Class<TSource> source, Class<? extends TSource> target);
+}
+//work in progrees in mind to implement ioc containser with full feature
+class ServiceCollection implements IServiceCollection{
+private  final  HashMap<Class,Object> container;
+    public ServiceCollection(HashMap<Class, Object> container) {
+        this.container = container;
+    }
 
+    @Override
+    public <TSource> void register(Class<TSource> source, Class<? extends TSource> target) {
+        container.put(source,target);
+    }
+}
 class Startup implements  IStartup{
     public  void configureServices(){
         //ioc builder
@@ -25,10 +39,14 @@ class Startup implements  IStartup{
 public class Main {
 
     public static void main(String[] args) {
+
+        //try 3
         ActionContext actionContext = new ActionContext();
         AppPipeLineBuilder builder= new AppPipeLineBuilder(Main::first);
         builder.useStartup(Startup.class);
          builder.build().next(actionContext);
+
+        //try 2
 //        Action pipeline= new PipeBuilder(Main::first)
 //                 .addPipe(Second.class)
 //                 .addPipe(TryExecute.class)
@@ -37,13 +55,14 @@ public class Main {
 
  //pipeline.process(actionContext);
 
+        //try 1
 
 //        Action action = (act) -> tryExecute2(act,
 //                actionContext1 -> tryExecute(actionContext1,
 //                        actionContext2 -> wrap(actionContext2,
 //                                Main::first)));
 //        action.process(actionContext);
-   actionContext.getData().entrySet().stream().forEach(x -> System.out.println(x));
+   actionContext.getData().entrySet().stream().forEach(System.out::println);
 
     }
 
@@ -249,8 +268,5 @@ class ActionContext {
     ActionContext() {
         data = new HashMap<>();
     }
-
-}
-class  ApplcationBuilder{
 
 }
