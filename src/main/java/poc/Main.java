@@ -1,20 +1,19 @@
 package poc;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 interface  IStartup{
     void configureServices();
-    void  configurePipeline(PipeBuilder builder);
+    void  configurePipeline(AppPipeLineBuilder builder);
 }
 
 class Startup implements  IStartup{
     public  void configureServices(){
         //ioc builder
     }
-    public  void  configurePipeline(PipeBuilder builder){
+    public  void  configurePipeline(AppPipeLineBuilder builder){
         builder.addPipe(First.class);
         builder.addPipe(Second.class);
         builder.addPipe((Wrap.class));
@@ -27,9 +26,9 @@ public class Main {
 
     public static void main(String[] args) {
         ActionContext actionContext = new ActionContext();
-        PipeBuilder builder= new PipeBuilder(Main::first);
+        AppPipeLineBuilder builder= new AppPipeLineBuilder(Main::first);
         builder.useStartup(Startup.class);
-         builder.build().process(actionContext);
+         builder.build().next(actionContext);
 //        Action pipeline= new PipeBuilder(Main::first)
 //                 .addPipe(Second.class)
 //                 .addPipe(TryExecute.class)
@@ -60,7 +59,7 @@ public class Main {
 
     public static void wrap(ActionContext actionContext, Action action) {
         System.out.println("starting");
-        action.process(actionContext);
+        action.next(actionContext);
         System.out.println("ending");
     }
 
@@ -69,7 +68,7 @@ public class Main {
             System.out.println("trying");
             actionContext.getData().put("tryExecute","try execute");
 
-            action.process(actionContext);
+            action.next(actionContext);
             System.out.println("end try");
         } catch (Exception e) {
 
@@ -79,7 +78,7 @@ public class Main {
     public static void tryExecute2(ActionContext actionContext, Action action) {
         try {
             System.out.println("trying");
-            action.process(actionContext);
+            action.next(actionContext);
         } catch (Exception e) {
 
         }
@@ -111,7 +110,7 @@ class Wrap extends Pipe {
         actionContext.getData().put("wrap","wrap");
 
 
-        _action.process(actionContext);
+        _action.next(actionContext);
         System.out.println("ending wrap");
 
     }
@@ -125,7 +124,7 @@ class  First extends  Pipe{
     public void handle(ActionContext actionContext) {
         System.out.println("starting first middleware");
         actionContext.getData().put("first","first middle waire");
-        _action.process(actionContext);
+        _action.next(actionContext);
         System.out.println("ending first");
 
     }
@@ -138,16 +137,16 @@ class  Second extends  Pipe{
     @Override
     public void handle(ActionContext actionContext) {
         System.out.println("starting second");
-        _action.process(actionContext);
+        _action.next(actionContext);
         System.out.println("ending secondS");
 
     }
 }
-class PipeBuilder {
+class AppPipeLineBuilder {
     Action _mainAction;
     List<Class<? extends Pipe>> _pipeTypes;
 
-    public PipeBuilder(Action mainAction) {
+    public AppPipeLineBuilder(Action mainAction) {
         _mainAction = mainAction;
         _pipeTypes = new ArrayList<>();
     }
@@ -163,7 +162,7 @@ class PipeBuilder {
 
     }
 
-    public PipeBuilder addPipe(Class<? extends Pipe> pipeType) {
+    public AppPipeLineBuilder addPipe(Class<? extends Pipe> pipeType) {
         _pipeTypes.add(pipeType);
         return this;
     }
@@ -212,13 +211,13 @@ class TryExecute extends Pipe {
     @Override
     public void handle(ActionContext actionContext) {
         System.out.println("starting tyr");
-        _action.process(actionContext);
+        _action.next(actionContext);
         System.out.println("ending try");
     }
 }
 
 interface Action {
-    void process(ActionContext actionContext);
+    void next(ActionContext actionContext);
 
 }
 
