@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 interface  IStartup{
-    void configureServices();
+    void configureServices( IServiceCollection iServiceCollection);
     void  configurePipeline(AppPipeLineBuilder builder);
 }
 interface IServiceCollection{
@@ -24,7 +24,7 @@ private  final  HashMap<Class,Object> container;
     }
 }
 class Startup implements  IStartup{
-    public  void configureServices(){
+    public  void configureServices( IServiceCollection iServiceCollection){
         //ioc builder
     }
     public  void  configurePipeline(AppPipeLineBuilder builder){
