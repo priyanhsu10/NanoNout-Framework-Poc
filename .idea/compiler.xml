@@ -9,5 +9,8 @@
         <module name="NanoNoutPoc" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="websample" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

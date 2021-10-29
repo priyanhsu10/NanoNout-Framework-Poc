@@ -12,10 +12,11 @@ interface IServiceCollection{
     <TSource>  void register(Class<TSource> source, Class<? extends TSource> target);
 }
 //work in progrees in mind to implement ioc containser with full feature
-class ServiceCollection implements IServiceCollection{
-private  final  HashMap<Class,Object> container;
-    public ServiceCollection(HashMap<Class, Object> container) {
-        this.container = container;
+ class ServiceCollection  implements IServiceCollection{
+private  final HashMap<Class,Class> container;
+    public ServiceCollection() {
+        this.container = new HashMap<>();
+        this.container.put(IServiceCollection.class,ServiceCollection.class);
     }
 
     @Override
@@ -26,6 +27,7 @@ private  final  HashMap<Class,Object> container;
 class Startup implements  IStartup{
     public  void configureServices( IServiceCollection iServiceCollection){
         //ioc builder
+        iServiceCollection.register(IServiceCollection.class,ServiceCollection.class);
     }
     public  void  configurePipeline(AppPipeLineBuilder builder){
         builder.addPipe(First.class);
