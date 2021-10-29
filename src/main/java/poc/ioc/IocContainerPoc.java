@@ -13,7 +13,8 @@ public class IocContainerPoc {
         Container c= new Container();
         c.addSington(IA.class,A.class);
         c.addSington(IB.class,B.class);
-        c.addSington(IA.class,IA.class);
+       //validatin check
+        // c.addSington(IA.class,IA.class);
 
   IB a=c.resolve(IB.class);
   a.test();
